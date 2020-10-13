@@ -3,25 +3,33 @@ const puppeteer = require('puppeteer');
 async function getAmazonMovies(page) {
   await page.goto('https://www.amazon.com/gp/video/storefront?node=2858905011/');
   const amazonMovies = await page.evaluate(() => {
-    let movieNodes = document.querySelectorAll('.tst-title-card a[aria-label]');
-    const movieNames = [];
-    for (const node of movieNodes) {
-      movieNames.push(node.getAttribute('aria-label'));
+    const loadMoreInCategory = document.querySelectorAll('button[aria-label="Right"]');
+    const buttonCount = document.querySelectorAll('button[aria-label="Right"]').length;
+    for (let index = 0; index < buttonCount; index++) {
+      for (let clickCounter = 1; clickCounter <= 3; clickCounter++) {
+        loadMoreInCategory[index].click();
+      }
     }
-    return movieNames;
+    const movieNodes = Array.from(document.querySelectorAll('.tst-title-card a[aria-label]'));
+    return movieNodes.map((node) => ({
+      name: node.getAttribute('aria-label'),
+      link: node.getAttribute('href'),
+    }));
   });
 
   return amazonMovies;
 }
 
 async function getRatingByMovieName(page, movieName) {
-  const movieNameEncoded = encodeURI(movieName);
-  console.log('movieNameEncoded', movieNameEncoded);
+  const movieNameEncoded = movieName.replace(/\s{1,}/g, '+');
   await page.goto(`https://www.imdb.com/search/title/?title=${movieNameEncoded}`);
-  // await page.goto(`https://www.imdb.com/search/title/?title=madmax`);
-  return page.evaluate(() =>
-    document.querySelector('.ratings-bar [data-value]').getAttribute('data-value')
-  );
+  const op = await page.evaluate(() => {
+    const ratingNode = document.querySelector('.ratings-bar [data-value]');
+    if (ratingNode) {
+      return ratingNode.getAttribute('data-value');
+    }
+  });
+  return op;
 }
 
 (async () => {
@@ -29,11 +37,16 @@ async function getRatingByMovieName(page, movieName) {
   const page = await browser.newPage();
 
   const amazonMovies = await getAmazonMovies(page);
-  console.log(amazonMovies);
 
-  for (const movieName of amazonMovies) {
-    await getRatingByMovieName(page, movieName);
+  const highlyRatedMovies = [];
+  for (const movie of amazonMovies) {
+    const rating = await getRatingByMovieName(page, movie.name);
+    if (rating && parseInt(rating, 10) > 5) {
+      highlyRatedMovies.push({ name: movie.name, rating, link: movie.link });
+    }
   }
+
+  console.log(highlyRatedMovies);
 
   browser.close();
 })();
