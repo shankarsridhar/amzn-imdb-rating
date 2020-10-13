@@ -1,1 +1,1 @@
-web: node prime.js
+web: node index.js
