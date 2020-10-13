@@ -5,11 +5,11 @@ async function getAmazonMovies(page) {
   const amazonMovies = await page.evaluate(() => {
     const loadMoreInCategory = document.querySelectorAll('button[aria-label="Right"]');
     const buttonCount = document.querySelectorAll('button[aria-label="Right"]').length;
-    for (let index = 0; index < buttonCount; index++) {
-      for (let clickCounter = 1; clickCounter <= 3; clickCounter++) {
-        loadMoreInCategory[index].click();
-      }
-    }
+    // for (let index = 0; index < buttonCount; index++) {
+    //   for (let clickCounter = 1; clickCounter <= 3; clickCounter++) {
+    //     loadMoreInCategory[index].click();
+    //   }
+    // }
     const movieNodes = Array.from(document.querySelectorAll('.tst-title-card a[aria-label]'));
     return movieNodes.map((node) => ({
       name: node.getAttribute('aria-label'),
@@ -32,7 +32,7 @@ async function getRatingByMovieName(page, movieName) {
   return op;
 }
 
-(async () => {
+const getMovies = async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -47,6 +47,9 @@ async function getRatingByMovieName(page, movieName) {
   }
 
   console.log(highlyRatedMovies);
+  return highlyRatedMovies;
 
   browser.close();
-})();
+};
+
+module.exports = { getMovies };

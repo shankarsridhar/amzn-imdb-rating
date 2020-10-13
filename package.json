@@ -13,6 +13,8 @@
   "author": "shankar.utd@gmail.com",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
     "puppeteer": "^5.3.1"
   }
 }
