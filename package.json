@@ -1,0 +1,18 @@
+{
+  "name": "imdb-scrap",
+  "version": "1.0.0",
+  "description": "scrap imdb website to get movie ratings",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "imdb",
+    "page-scrap"
+  ],
+  "author": "shankar.utd@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^5.3.1"
+  }
+}
