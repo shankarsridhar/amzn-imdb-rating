@@ -1,9 +1,8 @@
 const express = require('express');
 const app = express();
 
-app.get('/', async function (req, res) {
-  const { getMovies } = require('./prime');
-  const movieList = await getMovies();
+app.get('/imdb-ratings-amazon', async function (req, res) {
+  const movieList = require('./imdb-ratings-amazon.json');
   res.send(movieList);
 });
 
