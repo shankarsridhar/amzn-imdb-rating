@@ -8,14 +8,14 @@ async function getAmazonMovies(page) {
     const buttonCount = document.querySelectorAll('button[aria-label="Right"]').length;
     for (let index = 0; index < buttonCount; index++) {
       // TODO: find a better way instead of hardcoding to 3
-      for (let clickCounter = 1; clickCounter <= 3; clickCounter++) {
+      for (let clickCounter = 1; clickCounter <= 4; clickCounter++) {
         loadMoreInCategory[index].click();
       }
     }
     const movieNodes = Array.from(document.querySelectorAll('.tst-title-card a[aria-label]'));
     return movieNodes.map((node) => ({
       name: node.getAttribute('aria-label'),
-      link: `https://amazon.com${node.getAttribute('href')}`,
+      link: `https://amazon.com${node.getAttribute('href')}`.replace(/\/ref=\S{1,}/g, ''),
     }));
   });
 
@@ -44,7 +44,7 @@ const getMovies = async () => {
 
   const highlyRatedMovies = [];
   for (const movie of amazonMovies) {
-    const rating = parseInt(await getRatingByMovieName(page, movie.name), 10);
+    const rating = parseFloat(await getRatingByMovieName(page, movie.name), 10);
     if (typeof rating === 'number' && rating >= 5.5) {
       highlyRatedMovies.push({ name: movie.name, rating, link: movie.link });
     }
